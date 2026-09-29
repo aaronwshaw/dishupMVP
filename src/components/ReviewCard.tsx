@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FlaskConical } from "lucide-react";
 import { formatDate } from "@/lib/format";
 import type { Review } from "@/lib/types";
 import { StarRating } from "./StarRating";
@@ -16,12 +17,28 @@ export default function ReviewCard({ review }: { review: Review }) {
 
   return (
     <article className="flex gap-4 py-6">
-      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${color}`}>
-        {initials}
-      </div>
+      {review.isSample ? (
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-band text-muted">
+          <FlaskConical size={18} />
+        </div>
+      ) : (
+        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${color}`}>
+          {initials}
+        </div>
+      )}
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-          <p className="font-bold">{review.authorName}</p>
+          <p className="flex items-center gap-2 font-bold">
+            {review.authorName}
+            {review.isSample && (
+              <span
+                title="Example review added for testing. Not written by a real diner."
+                className="rounded-full border border-line bg-band px-2 py-0.5 text-[11px] font-bold tracking-wide text-muted uppercase"
+              >
+                Sample · not a real review
+              </span>
+            )}
+          </p>
           <p className="text-xs text-muted">{formatDate(review.createdAt)}</p>
         </div>
         <div className="mt-1">

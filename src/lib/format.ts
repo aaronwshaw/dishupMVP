@@ -19,7 +19,15 @@ export const courseLabel: Record<Course, string> = {
   main: "Main",
   dessert: "Dessert",
   drink: "Drink",
+  side: "Side",
 };
+
+/** "CC BY-SA 2.0" → its deed URL; undefined for anything unrecognized. */
+export function licenseUrl(license: string): string | undefined {
+  if (/^CC0/i.test(license)) return "https://creativecommons.org/publicdomain/zero/1.0/";
+  const m = license.match(/^CC (BY(?:-SA)?) (\d\.\d)/i);
+  return m ? `https://creativecommons.org/licenses/${m[1].toLowerCase()}/${m[2]}/` : undefined;
+}
 
 export const reviewCountLabel = (count: number) =>
   count === 1 ? "1 review" : `${count} reviews`;

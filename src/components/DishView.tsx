@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, PencilLine } from "lucide-react";
+import PhotoCreditLine from "./PhotoCreditLine";
 import ReviewCard from "./ReviewCard";
 import { StarRating } from "./StarRating";
 import Toast from "./Toast";
@@ -76,8 +77,12 @@ export default function DishView({
             </div>
           )}
           <p className="mt-2 text-xs text-muted">
-            {photos.length} {photos.length === 1 ? "photo" : "photos"}
-            {photos.length > 1 && " · includes diner photos"}
+            {selectedIndex === 0 && dish.photoCredit ? (
+              <PhotoCreditLine credit={dish.photoCredit} />
+            ) : (
+              "Diner photo"
+            )}
+            {photos.length > 1 && ` · ${photos.length} photos`}
           </p>
         </div>
 
@@ -90,7 +95,8 @@ export default function DishView({
             <Link href={`/restaurants/${restaurant.id}`} className="font-semibold text-ink underline-offset-2 hover:text-brand hover:underline">
               {restaurant.name}
             </Link>{" "}
-            · {restaurant.city} · {formatPrice(dish.price)}
+            · {restaurant.city}
+            {dish.price !== undefined && <> · about {formatPrice(dish.price)}</>}
           </p>
           <p className="mt-4 leading-relaxed">{dish.description}</p>
 

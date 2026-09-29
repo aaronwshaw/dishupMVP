@@ -1,187 +1,325 @@
-// Fake data for the MVP. Restaurants are fictional; dish photos come from TheMealDB
-// (https://www.themealdb.com) and live in /public/images/dishes.
+// Real Provo/Orem restaurants and menu items (checked September 2026). Prices are
+// approximate and left out where we couldn't confirm them. Photos are representative
+// Wikimedia Commons images, not photos from the restaurants themselves.
+//
+// Reviews below are SAMPLE data, clearly labeled in the UI. Their ratings are tuned so
+// each restaurant's average roughly matches its public Yelp rating (Sept 2026).
 import type { Dish, Restaurant, Review } from "@/lib/types";
+import { photoCredits } from "./photo-credits";
 
 const img = (slug: string) => `/images/dishes/${slug}.jpg`;
 
 export const restaurants: Restaurant[] = [
   {
-    id: "nonnas-table",
-    name: "Nonna's Table",
+    id: "bombay-house",
+    name: "Bombay House",
     city: "Provo",
     neighborhood: "Downtown Provo",
-    cuisine: "Italian",
+    cuisine: "Indian",
     priceLevel: 2,
     style: "casual",
-    imageUrl: img("margherita-pizza"),
+    imageUrl: img("chicken-tikka-masala"),
+    yelpRating: 4.7,
     description:
-      "Family-style Italian with wood-fired pizza, fresh pasta made every morning, and a dessert case you'll walk past twice.",
+      "A long-time Provo favorite for Indian food, known for rich curries, fresh naan and a menu that's easy to make vegetarian or vegan.",
   },
   {
-    id: "little-saigon-kitchen",
-    name: "Little Saigon Kitchen",
+    id: "asa-ramen",
+    name: "Asa Ramen",
     city: "Orem",
     neighborhood: "State Street",
-    cuisine: "Vietnamese",
+    cuisine: "Japanese",
     priceLevel: 1,
     style: "casual",
-    imageUrl: img("beef-pho"),
+    imageUrl: img("tonkotsu-ramen"),
+    yelpRating: 4.5,
     description:
-      "A cozy noodle house simmering pho broth for 12 hours, plus crusty banh mi and street-food snacks.",
+      "A cozy ramen shop serving creamy tonkotsu, miso and shoyu bowls, plus Japanese small plates like karaage, gyoza and chashu buns.",
   },
   {
-    id: "taqueria-el-sol",
-    name: "Taqueria El Sol",
+    id: "black-sheep-cafe",
+    name: "Black Sheep Cafe",
     city: "Provo",
-    neighborhood: "University Ave",
-    cuisine: "Mexican",
+    neighborhood: "Downtown Provo",
+    cuisine: "Native American",
+    priceLevel: 2,
+    style: "casual",
+    imageUrl: img("green-chile-navajo-taco"),
+    yelpRating: 4.2,
+    description:
+      "Contemporary Southwestern and Native American cooking on University Avenue, best known for its Navajo tacos and frybread.",
+  },
+  {
+    id: "j-dawgs",
+    name: "J Dawgs",
+    city: "Provo",
+    neighborhood: "Near BYU",
+    cuisine: "Hot Dogs",
     priceLevel: 1,
     style: "fast",
-    imageUrl: img("cajun-fish-tacos"),
+    imageUrl: img("polish-dawg"),
+    yelpRating: 4.2,
     description:
-      "Counter-service tacos, enchiladas and fresh churros. Quick, cheap and a student favorite.",
+      "A small, famously simple hot dog spot: beef or Polish, your choice of toppings, and the special sauce everyone talks about.",
   },
   {
-    id: "cedar-and-flame",
-    name: "Cedar & Flame Grill",
-    city: "Salt Lake City",
-    neighborhood: "Sugar House",
-    cuisine: "Steakhouse",
-    priceLevel: 4,
-    style: "fine",
-    imageUrl: img("steak-diane"),
-    description:
-      "An upscale grill known for hand-cut steaks, cedar-plank fish and a classic New York cheesecake.",
-  },
-  {
-    id: "harvest-bowl-co",
-    name: "Harvest Bowl Co.",
-    city: "Orem",
-    neighborhood: "University Place",
-    cuisine: "Healthy",
+    id: "cubbys",
+    name: "Cubby's",
+    city: "Provo",
+    neighborhood: "Provo",
+    cuisine: "Burgers",
     priceLevel: 2,
     style: "fast",
-    imageUrl: img("salmon-avocado-salad"),
+    imageUrl: img("dragonslayer-burger"),
+    yelpRating: 4.0,
     description:
-      "Fast, fresh bowls and salads built on seasonal produce, with plenty of vegetarian options.",
+      "Fast-casual burgers, sandwiches and salads built on top-sirloin patties and tri-tip, with three kinds of fries.",
   },
   {
-    id: "sugar-loaf-bakery",
-    name: "Sugar Loaf Bakery",
-    city: "Salt Lake City",
-    neighborhood: "9th & 9th",
-    cuisine: "Bakery & Desserts",
+    id: "cupbop",
+    name: "Cupbop",
+    city: "Provo",
+    neighborhood: "Near BYU",
+    cuisine: "Korean",
     priceLevel: 1,
-    style: "casual",
-    imageUrl: img("carrot-cake"),
+    style: "fast",
+    imageUrl: img("bulgogi-bop"),
+    yelpRating: 4.0,
     description:
-      "A neighborhood bakery for pies by the slice, layer cakes and cookies still warm from the oven.",
+      "Korean BBQ in a cup: rice, cabbage and sweet potato noodles topped with your choice of meat and sauce, spiced from 1 to 10.",
+  },
+  {
+    id: "bam-bams-bbq",
+    name: "Bam Bam's BBQ",
+    city: "Orem",
+    neighborhood: "State Street",
+    cuisine: "BBQ",
+    priceLevel: 2,
+    style: "casual",
+    imageUrl: img("brisket-sandwich"),
+    yelpRating: 4.0,
+    description:
+      "A Utah Valley barbecue joint known for its brisket, pulled pork, ribs and Swachos, a big pile of chips loaded with meat and cheese.",
+  },
+  {
+    id: "mo-bettahs-orem",
+    name: "Mo' Bettahs",
+    city: "Orem",
+    neighborhood: "State Street",
+    cuisine: "Hawaiian",
+    priceLevel: 1,
+    style: "fast",
+    imageUrl: img("kalua-pig-plate"),
+    yelpRating: 3.6,
+    description:
+      "Hawaiian-style plate lunches: slow-roasted kalua pig, teriyaki chicken and katsu served with rice and macaroni salad.",
+  },
+  {
+    id: "brick-oven-provo",
+    name: "Brick Oven",
+    city: "Provo",
+    neighborhood: "Near BYU",
+    cuisine: "Pizza & Italian",
+    priceLevel: 2,
+    style: "casual",
+    imageUrl: img("buffalo-chicken-pizza"),
+    yelpRating: 3.3,
+    description:
+      "A long-running Provo spot for pizza, pasta and house-made root beer, popular with BYU families and big groups.",
   },
 ];
 
-export const dishes: Dish[] = [
-  // Nonna's Table
-  { id: "margherita-pizza", restaurantId: "nonnas-table", name: "Margherita Pizza", course: "main", price: 14, imageUrl: img("margherita-pizza"), description: "San Marzano tomato, fresh mozzarella and basil on a blistered wood-fired crust." },
-  { id: "classic-lasagne", restaurantId: "nonnas-table", name: "Classic Lasagne", course: "main", price: 18, imageUrl: img("classic-lasagne"), description: "Layers of fresh pasta, slow-cooked beef ragù, béchamel and parmesan." },
-  { id: "spaghetti-carbonara", restaurantId: "nonnas-table", name: "Spaghetti Carbonara", course: "main", price: 17, imageUrl: img("spaghetti-carbonara"), description: "Egg yolk, pecorino, crispy guanciale and plenty of black pepper." },
-  { id: "salmon-prawn-risotto", restaurantId: "nonnas-table", name: "Salmon & Prawn Risotto", course: "main", price: 24, imageUrl: img("salmon-prawn-risotto"), description: "Creamy arborio rice with flaked salmon, prawns and lemon." },
-  { id: "strawberry-tart", restaurantId: "nonnas-table", name: "Strawberry Tart", course: "dessert", price: 8, imageUrl: img("strawberry-tart"), description: "Buttery pastry, vanilla custard and glazed fresh strawberries." },
+type DishRow = Omit<Dish, "imageUrl" | "photoCredit">;
 
-  // Little Saigon Kitchen
-  { id: "beef-pho", restaurantId: "little-saigon-kitchen", name: "Beef Pho", course: "main", price: 13, imageUrl: img("beef-pho"), description: "12-hour beef broth, rice noodles, sliced brisket, meatballs and fresh herbs." },
-  { id: "turkey-banh-mi", restaurantId: "little-saigon-kitchen", name: "Turkey Banh Mi", course: "main", price: 10, imageUrl: img("turkey-banh-mi"), description: "Crusty baguette with lemongrass turkey, pickled veggies, jalapeño and cilantro." },
-  { id: "grilled-pork-vermicelli", restaurantId: "little-saigon-kitchen", name: "Grilled Pork Vermicelli", course: "main", price: 14, imageUrl: img("grilled-pork-vermicelli"), description: "Bún thịt nướng: charred pork over rice noodles with herbs and nước chấm." },
-  { id: "rice-paper-dumplings", restaurantId: "little-saigon-kitchen", name: "Rice Paper Dumplings", course: "appetizer", price: 8, imageUrl: img("rice-paper-dumplings"), description: "Pan-crisped rice paper parcels with a chili-sesame dipping sauce." },
-  { id: "laksa-prawn-noodles", restaurantId: "little-saigon-kitchen", name: "Laksa Prawn Noodles", course: "main", price: 16, imageUrl: img("laksa-prawn-noodles"), description: "King prawns in a rich coconut-curry broth with thick noodles." },
+const dishRows: DishRow[] = [
+  // Bombay House
+  { id: "chicken-tikka-masala", restaurantId: "bombay-house", name: "Chicken Tikka Masala", course: "main", price: 19.95, description: "Tandoor-roasted chicken in a creamy, spiced tomato sauce. Served with basmati rice." },
+  { id: "chicken-makhani", restaurantId: "bombay-house", name: "Chicken Makhani", course: "main", price: 19.95, description: "Butter chicken: tender chicken in a mild, buttery tomato and cream sauce." },
+  { id: "saag-paneer", restaurantId: "bombay-house", name: "Saag Paneer", course: "main", price: 16.5, description: "Soft cubes of paneer cheese simmered in seasoned creamed spinach." },
+  { id: "vegetable-samosas", restaurantId: "bombay-house", name: "Vegetable Samosas", course: "appetizer", price: 7.5, description: "Crisp pastry filled with spiced potatoes and peas, with chutneys for dipping." },
 
-  // Taqueria El Sol
-  { id: "cajun-fish-tacos", restaurantId: "taqueria-el-sol", name: "Cajun Fish Tacos", course: "main", price: 11, imageUrl: img("cajun-fish-tacos"), description: "Spiced white fish, crunchy slaw and lime crema on warm tortillas." },
-  { id: "chicken-enchiladas", restaurantId: "taqueria-el-sol", name: "Chicken Enchiladas", course: "main", price: 12, imageUrl: img("chicken-enchiladas"), description: "Shredded chicken rolled in corn tortillas, red sauce and melted cheese." },
-  { id: "chickpea-fajitas", restaurantId: "taqueria-el-sol", name: "Chickpea Fajitas", course: "main", price: 10, imageUrl: img("chickpea-fajitas"), description: "Smoky roasted chickpeas and peppers with tortillas and salsa." },
-  { id: "churros", restaurantId: "taqueria-el-sol", name: "Churros", course: "dessert", price: 5, imageUrl: img("churros"), description: "Fried to order, rolled in cinnamon sugar, with chocolate for dipping." },
+  // Asa Ramen
+  { id: "tonkotsu-ramen", restaurantId: "asa-ramen", name: "Tonkotsu Ramen", course: "main", price: 11.45, description: "Rich, creamy pork-bone broth with noodles, chashu pork, green onion and a marinated egg." },
+  { id: "miso-ramen", restaurantId: "asa-ramen", name: "Miso Ramen", course: "main", price: 11.45, description: "Savory miso blended with house chicken broth, packed with umami." },
+  { id: "karai-ramen", restaurantId: "asa-ramen", name: "Karai Ramen", course: "main", price: 11.45, description: "Spicy broth topped with Korean-style minced pork, green onion, black garlic oil and half an egg." },
+  { id: "karaage", restaurantId: "asa-ramen", name: "Karaage", course: "appetizer", price: 6.45, description: "Crispy Japanese fried chicken thigh with lemon and roasted sesame sauce." },
+  { id: "gyoza", restaurantId: "asa-ramen", name: "Gyoza", course: "appetizer", price: 5.95, description: "Six pan-fried pork and chicken dumplings with gyoza dipping sauce." },
 
-  // Cedar & Flame Grill
-  { id: "steak-diane", restaurantId: "cedar-and-flame", name: "Steak Diane", course: "main", price: 48, imageUrl: img("steak-diane"), description: "Peppercorn-crusted filet with a brandy-mushroom pan sauce and crispy potatoes." },
-  { id: "flame-grilled-burger", restaurantId: "cedar-and-flame", name: "The Aussie Burger", course: "main", price: 22, imageUrl: img("flame-grilled-burger"), description: "Flame-grilled patty with a fried egg, beetroot, caramelized onion and cheddar." },
-  { id: "honey-teriyaki-salmon", restaurantId: "cedar-and-flame", name: "Honey Teriyaki Salmon", course: "main", price: 36, imageUrl: img("honey-teriyaki-salmon"), description: "Cedar-plank salmon glazed with honey teriyaki over jasmine rice." },
-  { id: "crispy-chicken-wings", restaurantId: "cedar-and-flame", name: "Crispy Chicken Wings", course: "appetizer", price: 16, imageUrl: img("crispy-chicken-wings"), description: "Twice-fried wings with house hot sauce and blue cheese dip." },
-  { id: "new-york-cheesecake", restaurantId: "cedar-and-flame", name: "New York Cheesecake", course: "dessert", price: 12, imageUrl: img("new-york-cheesecake"), description: "Dense, tangy and tall, on a graham cracker crust." },
+  // Black Sheep Cafe
+  { id: "green-chile-navajo-taco", restaurantId: "black-sheep-cafe", name: "Green Chile Pork Navajo Taco", course: "main", description: "Fresh frybread piled with green chile pork, beans, lettuce, tomato and cheese." },
+  { id: "honey-lavender-frybread", restaurantId: "black-sheep-cafe", name: "Honey Lavender Frybread", course: "dessert", description: "Warm, puffy frybread finished with honey lavender butter." },
+  { id: "green-chile-stew", restaurantId: "black-sheep-cafe", name: "Green Chile Stew", course: "main", description: "A hearty Southwestern stew built on roasted green chiles." },
+  { id: "enchiladas", restaurantId: "black-sheep-cafe", name: "Enchiladas (Red or Green)", course: "main", description: "Enchiladas smothered in your choice of red or green chile sauce." },
 
-  // Harvest Bowl Co.
-  { id: "salmon-avocado-salad", restaurantId: "harvest-bowl-co", name: "Salmon Avocado Salad", course: "main", price: 15, imageUrl: img("salmon-avocado-salad"), description: "Roasted salmon, avocado, greens and a lemon-herb vinaigrette." },
-  { id: "noodle-bowl-salad", restaurantId: "harvest-bowl-co", name: "Noodle Bowl Salad", course: "main", price: 13, imageUrl: img("noodle-bowl-salad"), description: "Chilled noodles, crunchy vegetables, herbs and a sweet chili dressing." },
-  { id: "thai-rice-noodle-salad", restaurantId: "harvest-bowl-co", name: "Thai Rice Noodle Salad", course: "main", price: 13, imageUrl: img("thai-rice-noodle-salad"), description: "Rice noodles tossed with peanuts, lime, mint and shredded veggies." },
-  { id: "shakshuka", restaurantId: "harvest-bowl-co", name: "Shakshuka", course: "main", price: 12, imageUrl: img("shakshuka"), description: "Eggs poached in spiced tomato and pepper sauce, served with toast." },
-  { id: "vegetarian-chilli", restaurantId: "harvest-bowl-co", name: "Vegetarian Chilli", course: "main", price: 11, imageUrl: img("vegetarian-chilli"), description: "Three-bean chilli with sweet potato, topped with yogurt and cilantro." },
+  // J Dawgs
+  { id: "polish-dawg", restaurantId: "j-dawgs", name: "Polish Dawg", course: "main", price: 7.5, description: "A seasoned Polish sausage in a toasted bun. Add onions, peppers and the special sauce." },
+  { id: "beef-dawg", restaurantId: "j-dawgs", name: "Beef Dawg", course: "main", price: 7.5, description: "An all-beef hot dog with your choice of toppings and J Dawgs special sauce." },
+  { id: "jdawgs-fries", restaurantId: "j-dawgs", name: "Fries", course: "side", price: 5, description: "A side of hot, crispy fries to go with your dawg." },
 
-  // Sugar Loaf Bakery
-  { id: "apple-pie", restaurantId: "sugar-loaf-bakery", name: "Apple Pie", course: "dessert", price: 6, imageUrl: img("apple-pie"), description: "Flaky lattice crust over cinnamon-spiced apples. Sold by the slice." },
-  { id: "carrot-cake", restaurantId: "sugar-loaf-bakery", name: "Carrot Cake", course: "dessert", price: 7, imageUrl: img("carrot-cake"), description: "Moist spiced cake with walnuts and cream cheese frosting." },
-  { id: "key-lime-pie", restaurantId: "sugar-loaf-bakery", name: "Key Lime Pie", course: "dessert", price: 6, imageUrl: img("key-lime-pie"), description: "Tart lime custard, graham crust and whipped cream." },
-  { id: "cinnamon-roll-cookies", restaurantId: "sugar-loaf-bakery", name: "Cinnamon Roll Cookies", course: "dessert", price: 3, imageUrl: img("cinnamon-roll-cookies"), description: "Swirled butter cookies with a cream cheese glaze." },
-  { id: "chocolate-raspberry-brownies", restaurantId: "sugar-loaf-bakery", name: "Chocolate Raspberry Brownie", course: "dessert", price: 4, imageUrl: img("chocolate-raspberry-brownies"), description: "Fudgy dark-chocolate brownie studded with fresh raspberries." },
+  // Cubby's
+  { id: "dragonslayer-burger", restaurantId: "cubbys", name: "Dragonslayer", course: "main", price: 14.45, description: "Top-sirloin patty mixed with bleu cheese, topped with bacon, pickles, greens and creamy buffalo sauce." },
+  { id: "houdini-burger", restaurantId: "cubbys", name: "Houdini", course: "main", price: 14.45, description: "Top-sirloin patty with sautéed mushrooms, bacon, smoked gouda, crispy onions and garlic aioli." },
+  { id: "tri-tip-sandwich", restaurantId: "cubbys", name: "Tri-Tip Steak Sandwich", course: "main", description: "Sliced tri-tip steak on a toasted roll." },
+  { id: "cockadoodledoo", restaurantId: "cubbys", name: "Cockadoodledoo", course: "main", description: "Cubby's chicken sandwich, one of the menu's most popular non-burger picks." },
+
+  // Cupbop
+  { id: "bulgogi-bop", restaurantId: "cupbop", name: "B Bop (Beef Bulgogi)", course: "main", description: "Sweet-savory marinated beef over rice, cabbage and sweet potato noodles." },
+  { id: "hot-bop", restaurantId: "cupbop", name: "Hot Bop (Spicy Pork)", course: "main", description: "Spicy marinated pork over rice and noodles. Choose your heat from 1 to 10." },
+  { id: "japchae", restaurantId: "cupbop", name: "Japchae", course: "main", description: "Stir-fried sweet potato glass noodles with vegetables." },
+  { id: "mandoo", restaurantId: "cupbop", name: "Mandoo", course: "appetizer", description: "Korean potstickers filled with kimchi, vegetables and pork." },
+
+  // Bam Bam's BBQ
+  { id: "brisket-sandwich", restaurantId: "bam-bams-bbq", name: "Brisket Sandwich", course: "main", description: "Slow-smoked, tender brisket piled on a bun. The house specialty." },
+  { id: "pulled-pork-sandwich", restaurantId: "bam-bams-bbq", name: "Pulled Pork Sandwich", course: "main", description: "Smoky pulled pork on a soft bun with barbecue sauce." },
+  { id: "pork-ribs", restaurantId: "bam-bams-bbq", name: "Pork Ribs", course: "main", description: "Smoked pork ribs with a sticky barbecue glaze." },
+  { id: "swachos", restaurantId: "bam-bams-bbq", name: "Swachos", course: "main", description: "Corn chips topped with nacho cheese, beans, sweet BBQ sauce and a third-pound of smoked meat." },
+
+  // Mo' Bettahs
+  { id: "kalua-pig-plate", restaurantId: "mo-bettahs-orem", name: "Kalua Pig Plate", course: "main", description: "Smoky, salty pork slow-roasted for over 10 hours, with rice and macaroni salad." },
+  { id: "teriyaki-chicken-plate", restaurantId: "mo-bettahs-orem", name: "Teriyaki Chicken Plate", course: "main", description: "Grilled marinated chicken thigh drizzled with teri sauce, with rice and macaroni salad." },
+  { id: "katsu-chicken-plate", restaurantId: "mo-bettahs-orem", name: "Katsu Chicken Plate", course: "main", description: "Breaded, deep-fried chicken thigh with katsu sauce, rice and macaroni salad." },
+
+  // Brick Oven
+  { id: "buffalo-chicken-pizza", restaurantId: "brick-oven-provo", name: "Buffalo Chicken Pizza", course: "main", price: 16, description: "Pizza topped with buffalo-sauced chicken (10-inch price shown)." },
+  { id: "deep-dish-lasagna", restaurantId: "brick-oven-provo", name: "Deep Dish Baked Lasagna", course: "main", price: 16.75, description: "Layers of pasta, meat sauce and cheese, baked deep-dish style." },
+  { id: "spinach-artichoke-dip", restaurantId: "brick-oven-provo", name: "Spinach Artichoke Dip", course: "appetizer", description: "Warm, cheesy spinach and artichoke dip for the table." },
 ];
 
-// [dishId, rating, author, text, date]
-const reviewRows: [string, number, string, string, string][] = [
-  ["margherita-pizza", 5, "Jessica M.", "Perfectly charred crust and the basil tastes like it was picked this morning. Best margherita in Utah County.", "2026-09-12"],
-  ["margherita-pizza", 5, "Tyler R.", "Simple and done right. The mozzarella is so fresh. I order this every single time.", "2026-08-30"],
-  ["margherita-pizza", 4, "Hannah L.", "Really good, a little soggy in the middle but the flavor makes up for it.", "2026-08-02"],
-  ["classic-lasagne", 5, "Marcus D.", "Huge portion and the ragù is incredible. Had leftovers for two days.", "2026-09-05"],
-  ["classic-lasagne", 4, "Emily W.", "Rich and comforting. Could use a bit more sauce but I'd get it again.", "2026-07-21"],
-  ["spaghetti-carbonara", 4, "Sam K.", "Authentic style with no cream, silky sauce and crispy guanciale. Slightly salty.", "2026-09-18"],
-  ["spaghetti-carbonara", 3, "Olivia P.", "Good but the pasta was a touch overcooked the night I went.", "2026-08-11"],
-  ["salmon-prawn-risotto", 4, "Grace T.", "Creamy and generous with the prawns. A great pick if you're not in a pasta mood.", "2026-08-25"],
-  ["beef-pho", 5, "Kevin N.", "The broth is deep and clear, not greasy at all. Tastes like my grandma's.", "2026-09-20"],
-  ["beef-pho", 5, "Ashley B.", "Perfect on a cold day. Load it up with the fresh herbs and lime.", "2026-09-01"],
-  ["beef-pho", 4, "Jordan F.", "Great broth, wish there was a little more brisket for the price.", "2026-08-14"],
-  ["turkey-banh-mi", 4, "Chris H.", "Baguette is crackly on the outside and soft inside. Pickles are the star.", "2026-09-09"],
-  ["turkey-banh-mi", 5, "Megan S.", "Cheap, fast and delicious. My go-to lunch between classes.", "2026-08-19"],
-  ["grilled-pork-vermicelli", 5, "Daniel V.", "Smoky pork, lots of herbs and the dipping sauce is addictive.", "2026-09-14"],
-  ["grilled-pork-vermicelli", 4, "Rachel C.", "Fresh and light but still filling. Ask for extra nước chấm.", "2026-08-06"],
-  ["rice-paper-dumplings", 4, "Brandon G.", "Crispy edges, chewy middle and the chili sauce has a real kick.", "2026-09-03"],
-  ["laksa-prawn-noodles", 3, "Lauren A.", "Nice coconut broth but not as spicy as I hoped and only four prawns.", "2026-08-28"],
-  ["laksa-prawn-noodles", 4, "Ethan Y.", "Rich and comforting. Would get it again on a rainy day.", "2026-07-30"],
-  ["cajun-fish-tacos", 5, "Sofia R.", "Fish is crispy and well-seasoned, and the lime crema ties it all together. Get three.", "2026-09-22"],
-  ["cajun-fish-tacos", 4, "Nate J.", "Solid tacos for the price. Slaw could use a bit more acid.", "2026-09-07"],
-  ["chicken-enchiladas", 3, "Brooke E.", "Tasty sauce but it was pretty mushy. Fine for a cheap meal.", "2026-08-21"],
-  ["chicken-enchiladas", 2, "Caleb M.", "Mostly cheese and not much chicken. The tacos are the better call here.", "2026-08-03"],
-  ["churros", 5, "Mia Z.", "Hot, crispy and not greasy. The chocolate sauce is thick and rich. Dangerous.", "2026-09-16"],
-  ["churros", 5, "Logan T.", "Worth the trip just for these.", "2026-08-27"],
-  ["steak-diane", 5, "Victoria K.", "Cooked a perfect medium-rare and the pan sauce is next level. Pricey but worth it.", "2026-09-19"],
-  ["steak-diane", 4, "Andrew P.", "Excellent steak, the potatoes were a little under-seasoned.", "2026-08-15"],
-  ["flame-grilled-burger", 4, "Isaac L.", "Messy in the best way. The beetroot sounded weird but it totally works.", "2026-09-11"],
-  ["flame-grilled-burger", 3, "Chloe D.", "Big and juicy but $22 for a burger is a lot.", "2026-08-08"],
-  ["honey-teriyaki-salmon", 4, "Natalie H.", "Sweet glaze, flaky fish and a nice smoky flavor from the plank.", "2026-09-02"],
-  ["crispy-chicken-wings", 5, "Tyler R.", "Shatteringly crispy. The hot sauce has real heat. Best wings in SLC.", "2026-09-13"],
-  ["crispy-chicken-wings", 4, "Jenna O.", "Great crunch. I'd skip the blue cheese and go for ranch.", "2026-08-17"],
-  ["new-york-cheesecake", 5, "Emily W.", "Dense, creamy and not too sweet. The real deal.", "2026-09-06"],
-  ["new-york-cheesecake", 5, "Ryan B.", "Split it with the table and immediately regretted sharing.", "2026-07-25"],
-  ["salmon-avocado-salad", 4, "Abby N.", "Fresh and actually filling for a salad. Salmon was cooked well.", "2026-09-17"],
-  ["salmon-avocado-salad", 4, "Josh W.", "My go-to healthy lunch. Dressing is great.", "2026-08-22"],
-  ["noodle-bowl-salad", 3, "Kayla F.", "Pretty good but the dressing was too sweet for me.", "2026-09-04"],
-  ["thai-rice-noodle-salad", 4, "Mason R.", "Loads of peanuts and mint. Super refreshing.", "2026-08-29"],
-  ["shakshuka", 5, "Leah G.", "Runny yolks, spicy sauce, great bread for dipping. A perfect brunch.", "2026-09-21"],
-  ["shakshuka", 4, "Spencer C.", "Really flavorful, though I wish it came with more toast.", "2026-08-09"],
-  ["vegetarian-chilli", 2, "Tanner S.", "Bland and watery the day I went. Needed a lot more spice.", "2026-08-31"],
-  ["vegetarian-chilli", 3, "Maddie K.", "Hearty and healthy but nothing special.", "2026-07-28"],
-  ["apple-pie", 5, "Grace T.", "The crust is unbelievably flaky. Get it warm with ice cream.", "2026-09-15"],
-  ["apple-pie", 4, "Ben A.", "Classic and comforting. Apples are a little firm, which I like.", "2026-08-12"],
-  ["carrot-cake", 5, "Hannah L.", "Moist, spiced perfectly and the frosting is to die for.", "2026-09-10"],
-  ["carrot-cake", 5, "Marcus D.", "Best carrot cake I've ever had. Huge slice too.", "2026-08-20"],
-  ["key-lime-pie", 4, "Olivia P.", "Nice and tart. The graham crust is buttery.", "2026-09-08"],
-  ["cinnamon-roll-cookies", 4, "Sam K.", "Tastes like a cinnamon roll in cookie form. Great with milk.", "2026-08-26"],
-  ["chocolate-raspberry-brownies", 3, "Chloe D.", "Fudgy but the raspberries made it a bit soggy.", "2026-09-12"],
-  ["chocolate-raspberry-brownies", 4, "Kevin N.", "Rich and chocolatey. The tart raspberries balance the sweetness.", "2026-08-04"],
+export const dishes: Dish[] = dishRows.map((d) => ({
+  ...d,
+  imageUrl: img(d.id),
+  photoCredit: photoCredits[d.id],
+}));
+
+// [dishId, rating, text, date]. Ratings per restaurant average ≈ its Yelp rating.
+const reviewRows: [string, number, string, string][] = [
+  // Bombay House: 56/12 = 4.67 (Yelp 4.7)
+  ["chicken-tikka-masala", 5, "Creamy, well-spiced sauce and tender chicken. Get extra naan to soak it all up.", "2026-09-18"],
+  ["chicken-tikka-masala", 5, "The classic order here for a reason. Big portion, easy to share.", "2026-09-02"],
+  ["chicken-tikka-masala", 5, "Great first dish if you're new to Indian food. Rich without being too spicy.", "2026-08-14"],
+  ["chicken-makhani", 5, "Buttery and mild, a good pick for anyone who doesn't want much heat.", "2026-09-11"],
+  ["chicken-makhani", 5, "Silky sauce and plenty of chicken. Pairs perfectly with garlic naan.", "2026-08-27"],
+  ["chicken-makhani", 4, "Really good, though a little sweet compared to the tikka masala.", "2026-08-05"],
+  ["saag-paneer", 5, "Great vegetarian option. The spinach is smooth and the paneer is soft.", "2026-09-15"],
+  ["saag-paneer", 4, "Flavorful and filling. Ask for it spicier if you like heat.", "2026-08-21"],
+  ["saag-paneer", 5, "Best saag I've had in Utah County.", "2026-07-30"],
+  ["vegetable-samosas", 5, "Crispy shell and well-seasoned potato filling. The chutneys are great.", "2026-09-08"],
+  ["vegetable-samosas", 4, "Good starter to share while you wait for curries.", "2026-08-18"],
+  ["vegetable-samosas", 4, "Solid samosas, a little heavy if you're ordering a lot of food.", "2026-07-26"],
+
+  // Asa Ramen: 67/15 = 4.47 (Yelp 4.5)
+  ["tonkotsu-ramen", 5, "Rich, creamy broth, tender pork and a perfectly jammy egg.", "2026-09-20"],
+  ["tonkotsu-ramen", 5, "My go-to comfort food in Orem. Great value for the price.", "2026-09-04"],
+  ["tonkotsu-ramen", 5, "The broth is the star. Order the full size, you'll want it.", "2026-08-16"],
+  ["miso-ramen", 4, "Savory and satisfying, a little lighter than the tonkotsu.", "2026-09-12"],
+  ["miso-ramen", 5, "Lots of umami and the noodles have a great chew.", "2026-08-25"],
+  ["miso-ramen", 4, "Good bowl on a cold day. Add corn if they have it.", "2026-08-02"],
+  ["karai-ramen", 4, "Nice kick with the black garlic oil. Not overwhelmingly hot.", "2026-09-14"],
+  ["karai-ramen", 5, "Spicy, garlicky and addictive. My favorite bowl here.", "2026-08-29"],
+  ["karai-ramen", 4, "Tasty, though I wanted a little more heat.", "2026-08-09"],
+  ["karaage", 5, "Super crispy and juicy. The sesame sauce is great.", "2026-09-06"],
+  ["karaage", 4, "Great side to share with the table.", "2026-08-19"],
+  ["karaage", 4, "Crispy and well seasoned, small-ish portion.", "2026-07-28"],
+  ["gyoza", 4, "Nicely pan-fried with a crispy bottom.", "2026-09-09"],
+  ["gyoza", 4, "Solid dumplings, a good add-on to any ramen.", "2026-08-22"],
+  ["gyoza", 5, "Juicy filling and great dipping sauce.", "2026-08-01"],
+
+  // Black Sheep Cafe: 50/12 = 4.17 (Yelp 4.2)
+  ["green-chile-navajo-taco", 5, "The frybread is light and crisp, and the green chile pork is fantastic.", "2026-09-17"],
+  ["green-chile-navajo-taco", 4, "Huge and filling. Worth the trip downtown.", "2026-08-30"],
+  ["green-chile-navajo-taco", 5, "The dish to get if it's your first time here.", "2026-08-11"],
+  ["honey-lavender-frybread", 5, "Warm, fluffy and the honey lavender butter is unreal. Don't skip dessert.", "2026-09-13"],
+  ["honey-lavender-frybread", 5, "Perfect to split after dinner.", "2026-08-24"],
+  ["honey-lavender-frybread", 4, "Sweet and delicious, a little rich to finish alone.", "2026-08-03"],
+  ["green-chile-stew", 4, "Hearty and comforting with a nice roasted chile flavor.", "2026-09-07"],
+  ["green-chile-stew", 4, "Great on a cold night. Get frybread on the side.", "2026-08-20"],
+  ["green-chile-stew", 3, "Good, but I preferred the Navajo taco.", "2026-07-29"],
+  ["enchiladas", 4, "Try them Christmas style with half red, half green.", "2026-09-10"],
+  ["enchiladas", 3, "Fine, but not as memorable as the frybread dishes.", "2026-08-15"],
+  ["enchiladas", 4, "Flavorful sauce and a filling portion.", "2026-07-27"],
+
+  // J Dawgs: 38/9 = 4.22 (Yelp 4.2)
+  ["polish-dawg", 5, "Get it with onions and extra special sauce. A BYU rite of passage.", "2026-09-19"],
+  ["polish-dawg", 5, "Snappy, well-seasoned sausage and that sweet, tangy sauce.", "2026-09-01"],
+  ["polish-dawg", 4, "Really good, just wish it was a bit bigger for the price.", "2026-08-12"],
+  ["beef-dawg", 4, "Simple and tasty. The sauce makes it.", "2026-09-05"],
+  ["beef-dawg", 4, "Solid hot dog. The Polish has more flavor though.", "2026-08-23"],
+  ["beef-dawg", 4, "Quick, cheap lunch between classes.", "2026-08-04"],
+  ["jdawgs-fries", 4, "Hot and crispy, good with a dawg.", "2026-09-16"],
+  ["jdawgs-fries", 4, "Nothing fancy, but they hit the spot.", "2026-08-26"],
+  ["jdawgs-fries", 4, "Dip them in the special sauce.", "2026-08-07"],
+
+  // Cubby's: 48/12 = 4.0 (Yelp 4.0)
+  ["dragonslayer-burger", 5, "Bleu cheese and buffalo sauce make this one stand out. Messy but great.", "2026-09-18"],
+  ["dragonslayer-burger", 4, "Big flavor, good-quality beef.", "2026-08-31"],
+  ["dragonslayer-burger", 4, "Tasty, just a bit pricey for a fast-casual burger.", "2026-08-10"],
+  ["houdini-burger", 4, "Mushrooms, gouda and crispy onions work really well together.", "2026-09-12"],
+  ["houdini-burger", 4, "Solid burger with a lot going on.", "2026-08-22"],
+  ["houdini-burger", 5, "My favorite burger on the menu. The garlic aioli is great.", "2026-07-31"],
+  ["tri-tip-sandwich", 4, "Good smoky tri-tip, filling sandwich.", "2026-09-03"],
+  ["tri-tip-sandwich", 3, "Decent, but I'd come back for the burgers instead.", "2026-08-17"],
+  ["tri-tip-sandwich", 4, "Nice change of pace from burgers.", "2026-07-25"],
+  ["cockadoodledoo", 4, "Crispy chicken and good toppings.", "2026-09-09"],
+  ["cockadoodledoo", 4, "Reliable chicken sandwich, try it with the sweet potato fries.", "2026-08-19"],
+  ["cockadoodledoo", 3, "Fine, not the standout on the menu.", "2026-08-02"],
+
+  // Cupbop: 48/12 = 4.0 (Yelp 4.0)
+  ["bulgogi-bop", 4, "Sweet, savory beef and a huge portion for the price.", "2026-09-17"],
+  ["bulgogi-bop", 5, "My default order. Get the sauce at a 3 or 4 spice level.", "2026-08-28"],
+  ["bulgogi-bop", 4, "Fast, filling and flavorful.", "2026-08-08"],
+  ["hot-bop", 5, "Spicy pork with a real kick. Great value.", "2026-09-11"],
+  ["hot-bop", 4, "Tasty, but be careful with the spice level!", "2026-08-21"],
+  ["hot-bop", 4, "Good heat and lots of food.", "2026-07-30"],
+  ["japchae", 4, "Chewy noodles and a nice sweet-savory flavor.", "2026-09-06"],
+  ["japchae", 3, "Okay on its own. Better as a side.", "2026-08-16"],
+  ["japchae", 4, "Good vegetarian-friendly option.", "2026-07-28"],
+  ["mandoo", 4, "Crispy potstickers, good to add to a cup.", "2026-09-02"],
+  ["mandoo", 4, "Solid, especially with the sauce.", "2026-08-13"],
+  ["mandoo", 3, "Fine, nothing special.", "2026-07-24"],
+
+  // Bam Bam's BBQ: 48/12 = 4.0 (Yelp 4.0)
+  ["brisket-sandwich", 5, "Super tender, flavorful brisket. The reason to come here.", "2026-09-19"],
+  ["brisket-sandwich", 5, "Some of the best brisket in Utah County.", "2026-08-29"],
+  ["brisket-sandwich", 4, "Great brisket, the line can get long at lunch.", "2026-08-06"],
+  ["pulled-pork-sandwich", 4, "Smoky and saucy, a classic done right.", "2026-09-13"],
+  ["pulled-pork-sandwich", 4, "Good sandwich, go for extra sauce.", "2026-08-23"],
+  ["pulled-pork-sandwich", 4, "Reliable pick if brisket is sold out.", "2026-08-01"],
+  ["pork-ribs", 4, "Tender with a nice glaze.", "2026-09-07"],
+  ["pork-ribs", 3, "Good, though the brisket is the better order.", "2026-08-18"],
+  ["pork-ribs", 4, "Solid ribs for Utah Valley.", "2026-07-27"],
+  ["swachos", 4, "A mountain of food. Easily a meal for two.", "2026-09-04"],
+  ["swachos", 4, "Messy, cheesy and fun. Get it with brisket.", "2026-08-14"],
+  ["swachos", 3, "Tasty but heavy, a lot of chips.", "2026-07-26"],
+
+  // Mo' Bettahs: 32/9 = 3.56 (Yelp 3.6)
+  ["kalua-pig-plate", 4, "Salty, smoky pork that's really tender. Mix it with the mac salad.", "2026-09-15"],
+  ["kalua-pig-plate", 4, "Big plate lunch for the price.", "2026-08-27"],
+  ["kalua-pig-plate", 3, "Good flavor, though not the juiciest kalua pig around.", "2026-08-05"],
+  ["teriyaki-chicken-plate", 4, "Sweet teri sauce and juicy chicken thigh.", "2026-09-10"],
+  ["teriyaki-chicken-plate", 4, "Easy, reliable plate lunch.", "2026-08-20"],
+  ["teriyaki-chicken-plate", 3, "Fine for fast food, nothing special.", "2026-07-31"],
+  ["katsu-chicken-plate", 4, "Crunchy and filling, good katsu sauce.", "2026-09-05"],
+  ["katsu-chicken-plate", 3, "Heavier than the other plates, but it hits the spot.", "2026-08-15"],
+  ["katsu-chicken-plate", 3, "Okay. I'd go with the teriyaki next time.", "2026-07-25"],
+
+  // Brick Oven: 30/9 = 3.33 (Yelp 3.3)
+  ["buffalo-chicken-pizza", 4, "Good flavor with a mild buffalo kick.", "2026-09-14"],
+  ["buffalo-chicken-pizza", 3, "Decent, though the buffalo flavor is on the mild side.", "2026-08-24"],
+  ["buffalo-chicken-pizza", 4, "Pair it with the house root beer.", "2026-08-03"],
+  ["deep-dish-lasagna", 3, "Filling and cheesy, but pretty average.", "2026-09-08"],
+  ["deep-dish-lasagna", 3, "Okay lasagna, good for a big family dinner.", "2026-08-17"],
+  ["deep-dish-lasagna", 4, "Comforting and generous portion.", "2026-07-29"],
+  ["spinach-artichoke-dip", 3, "Fine starter, nothing too memorable.", "2026-09-01"],
+  ["spinach-artichoke-dip", 3, "Warm and cheesy, pretty mild in flavor.", "2026-08-11"],
+  ["spinach-artichoke-dip", 3, "Good for sharing, but I'd skip it next time.", "2026-07-24"],
 ];
 
-export const seedReviews: Review[] = reviewRows.map(
-  ([dishId, rating, authorName, text, date], i) => ({
-    id: `seed-${i + 1}`,
-    dishId,
-    rating,
-    authorName,
-    text,
-    createdAt: `${date}T18:00:00.000Z`,
-  }),
-);
+export const seedReviews: Review[] = reviewRows.map(([dishId, rating, text, date], i) => ({
+  id: `sample-${i + 1}`,
+  dishId,
+  rating,
+  text,
+  authorName: "DishUp sample",
+  createdAt: `${date}T18:00:00.000Z`,
+  isSample: true,
+}));

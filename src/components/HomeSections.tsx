@@ -26,7 +26,7 @@ export default function HomeSections() {
   return (
     <>
       <section id="top-dishes" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-12">
-        <SectionHeading title="Top-rated dishes" subtitle="The plates diners can't stop talking about" />
+        <SectionHeading title="Top-rated dishes" subtitle="Highest-rated plates so far (includes sample reviews)" />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {topDishes.map(({ dish, rating }) => (
             <DishCard

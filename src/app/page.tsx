@@ -11,7 +11,7 @@ export default function Home() {
             Find the best dish, not just the best restaurant
           </h1>
           <p className="mt-4 max-w-xl text-base text-white/75 sm:text-lg">
-            Real reviews of the plates people actually ordered, so you know exactly what to get.
+            Rate the plates you actually ordered at Provo and Orem spots, so the next person knows exactly what to get.
           </p>
           <div className="mt-8 flex w-full justify-center">
             <HeroSearch cities={CITIES} />

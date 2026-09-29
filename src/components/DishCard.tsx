@@ -31,7 +31,9 @@ export default function DishCard({
       <div className="flex flex-1 flex-col gap-1 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-bold leading-snug group-hover:text-brand">{dish.name}</h3>
-          <span className="shrink-0 text-sm font-semibold">{formatPrice(dish.price)}</span>
+          {dish.price !== undefined && (
+            <span className="shrink-0 text-sm font-semibold">{formatPrice(dish.price)}</span>
+          )}
         </div>
         {restaurantName && <p className="text-sm text-muted">{restaurantName}</p>}
         <div className="mt-auto pt-1">

@@ -88,6 +88,12 @@ export default function RestaurantView({ restaurant, dishes }: { restaurant: Res
           <section id="about" className="mt-12 mb-12 scroll-mt-20">
             <h2 className="border-b border-line pb-3 text-xl font-extrabold">About</h2>
             <p className="mt-4 leading-relaxed">{restaurant.description}</p>
+            <p className="mt-4 rounded-md bg-band p-3 text-sm text-muted">
+              DishUp is a class project and isn&apos;t affiliated with {restaurant.name}. The sample
+              reviews here are placeholders, tuned so the average roughly matches this
+              restaurant&apos;s public Yelp rating ({restaurant.yelpRating.toFixed(1)}★, Sept 2026).
+              Dish photos are representative, and prices are approximate.
+            </p>
           </section>
         </div>
 

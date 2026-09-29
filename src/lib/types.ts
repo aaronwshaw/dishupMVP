@@ -1,6 +1,6 @@
 export type PriceLevel = 1 | 2 | 3 | 4;
 export type RestaurantStyle = "fast" | "casual" | "fine";
-export type Course = "appetizer" | "main" | "dessert" | "drink";
+export type Course = "appetizer" | "main" | "dessert" | "drink" | "side";
 
 export interface Restaurant {
   id: string;
@@ -12,6 +12,14 @@ export interface Restaurant {
   style: RestaurantStyle;
   imageUrl: string;
   description: string;
+  /** Public Yelp average the sample reviews were tuned to match. */
+  yelpRating: number;
+}
+
+export interface PhotoCredit {
+  author: string;
+  license: string;
+  source: string;
 }
 
 export interface Dish {
@@ -19,8 +27,10 @@ export interface Dish {
   restaurantId: string;
   name: string;
   course: Course;
-  price: number;
+  /** Approximate menu price; omitted when we couldn't confirm it. */
+  price?: number;
   imageUrl: string;
+  photoCredit?: PhotoCredit;
   description: string;
 }
 
@@ -32,9 +42,11 @@ export interface Review {
   photoUrl?: string;
   authorName: string;
   createdAt: string; // ISO date
+  /** Seeded example review, not written by a real diner. */
+  isSample?: boolean;
 }
 
-export type NewReview = Omit<Review, "id" | "createdAt">;
+export type NewReview = Omit<Review, "id" | "createdAt" | "isSample">;
 
 export interface Rating {
   avg: number;

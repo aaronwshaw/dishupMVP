@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
+import Link from "next/link";
 import Header from "@/components/Header";
 import "./globals.css";
 
@@ -21,7 +22,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1">{children}</main>
         <footer className="border-t border-line bg-band">
           <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted">
-            © 2026 DishUp · A class MVP. Restaurants are fictional, and photos come from TheMealDB.
+            © 2026 DishUp · A BYU class MVP, not affiliated with any restaurant listed. Sample reviews are
+            placeholders, and dish photos are representative images from Wikimedia Commons{" "}
+            (<Link href="/credits" className="underline-offset-2 hover:text-brand hover:underline">photo credits</Link>).
           </div>
         </footer>
       </body>
