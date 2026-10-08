@@ -26,7 +26,11 @@ jobs:
       - name: Type-check (tsc strict)
         run: npx tsc --noEmit
       - name: Vulnerable dependencies (high or critical)
-        run: npm audit --omit=dev --audit-level=high
+        run: |
+          if ! npm audit --omit=dev --audit-level=high; then
+            npm audit --omit=dev --json | jq -r '.vulnerabilities[] | select(.severity=="high" or .severity=="critical") | "::error title=Vulnerable dependency::\(.name) (\(.severity)) \(.range) fix: \(if .fixAvailable == true then "npm audit fix" elif (.fixAvailable|type)=="object" then "\(.fixAvailable.name)@\(.fixAvailable.version)" else "none yet" end)"'
+            exit 1
+          fi
 
   secrets:
     name: secret-scan
