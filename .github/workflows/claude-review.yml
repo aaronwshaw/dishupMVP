@@ -1,0 +1,31 @@
+name: AI code review
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  review:
+    name: ai-review
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Skip until the ANTHROPIC_API_KEY secret is added
+        id: key
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: echo "present=$([ -n "$KEY" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v5
+        if: steps.key.outputs.present == 'yes'
+      - uses: anthropics/claude-code-action@v1
+        if: steps.key.outputs.present == 'yes'
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review this PR against CLAUDE.md. Focus on security (input validation,
+            secrets, XSS), missing tests for changed logic in src/lib, and
+            accessibility at phone width. Comment only; never approve or push.
+          claude_args: "--model claude-sonnet-5-5 --max-turns 8"
