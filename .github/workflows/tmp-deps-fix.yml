@@ -18,7 +18,13 @@ jobs:
       - run: npm install next@16.4.0 eslint-config-next@16.4.0
       - run: npm audit fix --omit=dev || true
       - run: npm audit --omit=dev --audit-level=high
-      - run: npm run build
+      - name: build
+        run: |
+          set -o pipefail
+          if ! npm run build 2>&1 | tee build.log; then
+            tail -60 build.log | grep -v '^\s*$' | tail -25 | while IFS= read -r l; do echo "::error title=build::$l"; done
+            exit 1
+          fi
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
