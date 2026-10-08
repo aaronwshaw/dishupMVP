@@ -16,7 +16,8 @@ jobs:
         with:
           node-version-file: .nvmrc
       - run: npm install next@16.4.0 eslint-config-next@16.4.0
-      - run: npm audit fix --omit=dev || true
+      - run: npm audit fix || true
+      - run: npm ci
       - run: npm audit --omit=dev --audit-level=high
       - name: build
         run: |
