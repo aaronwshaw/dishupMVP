@@ -18,7 +18,7 @@ jobs:
         env:
           KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: echo "present=$([ -n "$KEY" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: steps.key.outputs.present == 'yes'
       - uses: anthropics/claude-code-action@v1
         if: steps.key.outputs.present == 'yes'

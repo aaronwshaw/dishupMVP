@@ -1,5 +1,5 @@
 // Conventional Commits + a board ticket, e.g. "feat(search): match plurals (OD-2)"
-export default {
+const config = {
   extends: ["@commitlint/config-conventional"],
   rules: {
     "type-enum": [2, "always", ["feat", "fix", "chore", "docs", "test", "refactor", "perf", "ci", "style", "revert"]],
@@ -10,3 +10,5 @@ export default {
   },
   parserPreset: { parserOpts: { issuePrefixes: ["OD-"] } },
 };
+
+export default config;
