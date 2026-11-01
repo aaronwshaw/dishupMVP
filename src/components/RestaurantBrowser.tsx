@@ -8,12 +8,14 @@ import RestaurantCard from "./RestaurantCard";
 import SearchInput from "./SearchInput";
 import {
   CITIES,
+  CUISINES,
   getRestaurant,
   getRestaurantDishes,
-  getRestaurants,
   ratingFor,
   restaurantRating,
   searchDishes,
+  searchRestaurants,
+  suggestQuery,
 } from "@/lib/data";
 import { useReviews } from "@/lib/useReviews";
 
@@ -41,8 +43,11 @@ export default function RestaurantBrowser({
     window.history.replaceState(null, "", qs ? `/restaurants?${qs}` : "/restaurants");
   }
 
-  const results = getRestaurants({ city, query });
+  const { restaurants: results, approximate } = searchRestaurants({ city, query });
   const dishMatches = searchDishes(query, city || undefined);
+  const nothingFound = results.length === 0 && dishMatches.length === 0;
+  const suggestion = nothingFound ? suggestQuery(query) : undefined;
+  const inOtherCities = nothingFound && city ? searchRestaurants({ query }).restaurants.length : 0;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -66,17 +71,50 @@ export default function RestaurantBrowser({
       </div>
 
       <p className="mt-6 text-sm font-semibold text-muted">
-        {results.length} {results.length === 1 ? "restaurant" : "restaurants"}
+        {approximate
+          ? `No exact matches for "${query.trim()}". Showing the closest results.`
+          : `${results.length} ${results.length === 1 ? "restaurant" : "restaurants"}`}
       </p>
 
-      {results.length === 0 ? (
+      {nothingFound ? (
         <div className="mt-4">
           <EmptyState
-            title="No restaurants found"
-            message="Try a different search term or choose another location."
-          />
+            title={`Nothing for "${query.trim()}" yet`}
+            message="DishUp only covers a handful of Provo and Orem spots so far. Try one of these instead:"
+          >
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {suggestion && (
+                <button
+                  type="button"
+                  onClick={() => update({ query: suggestion })}
+                  className="h-9 rounded-full bg-brand px-4 text-sm font-bold text-white hover:bg-brand-dark"
+                >
+                  Did you mean &ldquo;{suggestion}&rdquo;?
+                </button>
+              )}
+              {inOtherCities > 0 && (
+                <button
+                  type="button"
+                  onClick={() => update({ city: "" })}
+                  className="h-9 rounded-full bg-brand px-4 text-sm font-bold text-white hover:bg-brand-dark"
+                >
+                  See {inOtherCities} in all locations
+                </button>
+              )}
+              {CUISINES.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => update({ query: c })}
+                  className="h-9 rounded-full border border-line bg-white px-4 text-sm font-semibold hover:border-ink"
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </EmptyState>
         </div>
-      ) : (
+      ) : results.length === 0 ? null : (
         <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((r) => (
             <RestaurantCard

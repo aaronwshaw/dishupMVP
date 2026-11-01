@@ -7,6 +7,7 @@ export interface Restaurant {
   name: string;
   city: string;
   neighborhood: string;
+  address: string;
   cuisine: string;
   priceLevel: PriceLevel;
   style: RestaurantStyle;

@@ -71,7 +71,14 @@ export default function PhotoUpload({ value, onChange }: { value?: string; onCha
           className="flex h-36 w-full flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-line text-sm text-muted transition-colors hover:border-brand hover:text-brand"
         >
           <Camera size={28} />
-          {busy ? "Processing…" : "Click or drag a photo of your dish"}
+          {busy ? (
+            "Processing…"
+          ) : (
+            <>
+              <span className="pointer-coarse:hidden">Click or drag a photo of your dish</span>
+              <span className="hidden pointer-coarse:inline">Tap to add a photo of your dish</span>
+            </>
+          )}
         </button>
       )}
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />

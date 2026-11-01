@@ -28,19 +28,20 @@ export default function ReviewForm({ dish, restaurant }: { dish: Dish; restauran
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
+    let postedId: string;
     try {
-      addReview({
+      postedId = addReview({
         dishId: dish.id,
         rating,
         text: text.trim(),
         photoUrl,
         authorName: authorName.trim() || "DishUp diner",
-      });
+      }).id;
     } catch (err) {
       setErrors({ save: (err as Error).message });
       return;
     }
-    router.push(`/dishes/${dish.id}?posted=1`);
+    router.push(`/dishes/${dish.id}?posted=${postedId}`);
   }
 
   return (
