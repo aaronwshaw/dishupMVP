@@ -14,5 +14,5 @@ export default async function DishPage(props: PageProps<"/dishes/[id]">) {
   const dish = getDish(id);
   const restaurant = dish && getRestaurant(dish.restaurantId);
   if (!dish || !restaurant) notFound();
-  return <DishView dish={dish} restaurant={restaurant} justPosted={posted === "1"} />;
+  return <DishView dish={dish} restaurant={restaurant} postedReviewId={typeof posted === "string" ? posted : undefined} />;
 }

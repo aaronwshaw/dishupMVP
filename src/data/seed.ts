@@ -12,6 +12,7 @@ const img = (slug: string) => `/images/dishes/${slug}.jpg`;
 export const restaurants: Restaurant[] = [
   {
     id: "bombay-house",
+    address: "463 N University Ave, Provo, UT 84601",
     name: "Bombay House",
     city: "Provo",
     neighborhood: "Downtown Provo",
@@ -25,6 +26,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "asa-ramen",
+    address: "1120 S State St, Orem, UT 84097",
     name: "Asa Ramen",
     city: "Orem",
     neighborhood: "State Street",
@@ -38,6 +40,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "black-sheep-cafe",
+    address: "19 N University Ave, Provo, UT 84601",
     name: "Black Sheep Cafe",
     city: "Provo",
     neighborhood: "Downtown Provo",
@@ -51,6 +54,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "j-dawgs",
+    address: "N 700 E (near BYU), Provo, UT",
     name: "J Dawgs",
     city: "Provo",
     neighborhood: "Near BYU",
@@ -64,6 +68,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "cubbys",
+    address: "1258 N State St, Provo, UT 84604",
     name: "Cubby's",
     city: "Provo",
     neighborhood: "Provo",
@@ -77,6 +82,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "cupbop",
+    address: "815 N 700 E, Provo, UT 84606",
     name: "Cupbop",
     city: "Provo",
     neighborhood: "Near BYU",
@@ -90,6 +96,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "bam-bams-bbq",
+    address: "1708 S State St, Orem, UT 84097",
     name: "Bam Bam's BBQ",
     city: "Orem",
     neighborhood: "State Street",
@@ -103,6 +110,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "mo-bettahs-orem",
+    address: "1385 S State St, Orem, UT 84097",
     name: "Mo' Bettahs",
     city: "Orem",
     neighborhood: "State Street",
@@ -116,6 +124,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: "brick-oven-provo",
+    address: "111 E 800 N, Provo, UT 84606",
     name: "Brick Oven",
     city: "Provo",
     neighborhood: "Near BYU",

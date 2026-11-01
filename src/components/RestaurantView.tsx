@@ -4,13 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, PencilLine, Tag, UtensilsCrossed } from "lucide-react";
+import { MapPin, Navigation, PencilLine, Tag, UtensilsCrossed } from "lucide-react";
 import DishCard from "./DishCard";
 import EmptyState from "./EmptyState";
 import PillGroup from "./PillGroup";
 import RatingSummary from "./RatingSummary";
 import SearchInput from "./SearchInput";
-import { ratingFor, restaurantRating } from "@/lib/data";
+import { dishMatches, ratingFor, restaurantRating } from "@/lib/data";
 import { priceLabel } from "@/lib/format";
 import type { Dish, Restaurant } from "@/lib/types";
 import { useReviews } from "@/lib/useReviews";
@@ -31,14 +31,17 @@ export default function RestaurantView({ restaurant, dishes }: { restaurant: Res
   const [minRating, setMinRating] = useState(0);
   const [reviewDishId, setReviewDishId] = useState(dishes[0]?.id ?? "");
 
-  const withRatings = dishes.map((dish) => ({ dish, rating: ratingFor(reviews, dish.id) }));
-  const q = query.toLowerCase().trim();
-  const visible = withRatings
-    .filter(({ dish }) => !q || dish.name.toLowerCase().includes(q))
-    .filter(({ rating }) => minRating === 0 || (rating.count > 0 && rating.avg >= minRating))
+  const ranked = dishes
+    .map((dish) => ({ dish, rating: ratingFor(reviews, dish.id) }))
     .sort((a, b) => b.rating.avg - a.rating.avg);
+  const visible = ranked
+    .filter(({ dish }) => !query.trim() || dishMatches(dish, query))
+    .filter(({ rating }) => minRating === 0 || (rating.count > 0 && rating.avg >= minRating));
 
-  const banner = dishes.slice(0, 3);
+  // Lead the banner with the runner-up dish so phones (which show one photo) don't
+  // repeat the top-rated dish card that sits right below it.
+  const banner = [ranked[1], ranked[0], ranked[2]].filter(Boolean).map((x) => x.dish);
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurant.name} ${restaurant.address}`)}`;
 
   return (
     <div>
@@ -63,8 +66,16 @@ export default function RestaurantView({ restaurant, dishes }: { restaurant: Res
             <RatingSummary rating={restaurantRating(reviews, restaurant.id)} size={16} />
             <span className="flex items-center gap-1 text-muted"><UtensilsCrossed size={14} /> {restaurant.cuisine}</span>
             <span className="flex items-center gap-1 text-muted"><Tag size={14} /> {priceLabel(restaurant.priceLevel)} · {STYLE_LABEL[restaurant.style]}</span>
-            <span className="flex items-center gap-1 text-muted"><MapPin size={14} /> {restaurant.neighborhood}, {restaurant.city}</span>
+            <span className="flex items-center gap-1 text-muted"><MapPin size={14} /> {restaurant.address}</span>
           </div>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:underline"
+          >
+            <Navigation size={14} /> Directions &amp; hours
+          </a>
 
           <section id="dishes" className="mt-8 scroll-mt-20">
             <h2 className="border-b border-line pb-3 text-xl font-extrabold">Dishes ({dishes.length})</h2>
@@ -88,6 +99,13 @@ export default function RestaurantView({ restaurant, dishes }: { restaurant: Res
           <section id="about" className="mt-12 mb-12 scroll-mt-20">
             <h2 className="border-b border-line pb-3 text-xl font-extrabold">About</h2>
             <p className="mt-4 leading-relaxed">{restaurant.description}</p>
+            <p className="mt-3 text-sm">
+              <span className="font-bold">Address: </span>
+              {restaurant.address} ·{" "}
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-brand hover:underline">
+                Open in Google Maps
+              </a>
+            </p>
             <p className="mt-4 rounded-md bg-band p-3 text-sm text-muted">
               DishUp is a class project and isn&apos;t affiliated with {restaurant.name}. The sample
               reviews here are placeholders, tuned so the average roughly matches this
@@ -98,7 +116,7 @@ export default function RestaurantView({ restaurant, dishes }: { restaurant: Res
         </div>
 
         {/* Sidebar, like OpenTable's reservation card */}
-        <aside className="mb-12 lg:mb-0">
+        <aside id="rate" className="mb-12 scroll-mt-20 lg:mb-0">
           <div className="rounded-lg border border-line bg-white p-5 shadow-md lg:sticky lg:top-24 lg:mt-6">
             <h2 className="border-b border-line pb-3 text-center text-lg font-extrabold">Rate a dish here</h2>
             <label className="mt-4 block text-sm font-bold" htmlFor="review-dish">What did you order?</label>
@@ -125,6 +143,17 @@ export default function RestaurantView({ restaurant, dishes }: { restaurant: Res
             </p>
           </div>
         </aside>
+      </div>
+
+      {/* Phones: the rate card sits below everything, so keep a shortcut on screen. */}
+      <div className="h-20 lg:hidden" />
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] lg:hidden">
+        <a
+          href="#rate"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-brand font-bold text-white hover:bg-brand-dark"
+        >
+          <PencilLine size={18} /> Rate a dish here
+        </a>
       </div>
     </div>
   );
