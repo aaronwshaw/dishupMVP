@@ -6,13 +6,10 @@ export const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 
 export const formatRating = (avg: number) => avg.toFixed(1);
 
+// Local time, so a review posted on a Utah evening isn't dated tomorrow. Seed reviews
+// are stamped at 18:00 UTC, which is the same calendar day in every US time zone.
 export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 export const courseLabel: Record<Course, string> = {
   appetizer: "Appetizer",

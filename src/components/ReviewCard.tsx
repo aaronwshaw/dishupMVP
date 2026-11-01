@@ -6,7 +6,7 @@ import { StarRating } from "./StarRating";
 
 const AVATAR_COLORS = ["bg-rose-600", "bg-sky-700", "bg-emerald-700", "bg-amber-600", "bg-violet-700", "bg-teal-700"];
 
-export default function ReviewCard({ review }: { review: Review }) {
+export default function ReviewCard({ review, highlight = false }: { review: Review; highlight?: boolean }) {
   const initials = review.authorName
     .split(/\s+/)
     .map((p) => p[0])
@@ -16,7 +16,12 @@ export default function ReviewCard({ review }: { review: Review }) {
   const color = AVATAR_COLORS[review.authorName.length % AVATAR_COLORS.length];
 
   return (
-    <article className="flex gap-4 py-6">
+    <article
+      id={`review-${review.id}`}
+      className={`flex scroll-mt-24 gap-4 py-6 transition-colors duration-700 ${
+        highlight ? "-mx-3 rounded-lg bg-brand-soft px-3 ring-2 ring-brand" : ""
+      }`}
+    >
       {review.isSample ? (
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-band text-muted">
           <FlaskConical size={18} />
@@ -30,14 +35,7 @@ export default function ReviewCard({ review }: { review: Review }) {
         <div className="flex flex-wrap items-baseline justify-between gap-x-4">
           <p className="flex items-center gap-2 font-bold">
             {review.authorName}
-            {review.isSample && (
-              <span
-                title="Example review added for testing. Not written by a real diner."
-                className="rounded-full border border-line bg-band px-2 py-0.5 text-[11px] font-bold tracking-wide text-muted uppercase"
-              >
-                Sample · not a real review
-              </span>
-            )}
+            {highlight && <span className="text-xs font-bold text-brand">Your review</span>}
           </p>
           <p className="text-xs text-muted">{formatDate(review.createdAt)}</p>
         </div>

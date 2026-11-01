@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, PencilLine } from "lucide-react";
-import PhotoCreditLine from "./PhotoCreditLine";
+import { ChevronRight, Info, PencilLine } from "lucide-react";
 import ReviewCard from "./ReviewCard";
 import { StarRating } from "./StarRating";
 import Toast from "./Toast";
@@ -13,17 +12,18 @@ import { courseLabel, formatPrice, formatRating, reviewCountLabel } from "@/lib/
 import type { Dish, Restaurant } from "@/lib/types";
 import { useReviews } from "@/lib/useReviews";
 
-// Drop ?posted=1 so a refresh doesn't show the toast again.
+// Drop ?posted=… so a refresh doesn't show the toast again.
 const clearPostedParam = () => window.history.replaceState(null, "", window.location.pathname);
 
 export default function DishView({
   dish,
   restaurant,
-  justPosted,
+  postedReviewId,
 }: {
   dish: Dish;
   restaurant: Restaurant;
-  justPosted: boolean;
+  /** Set right after posting, so we can scroll to and highlight the new review. */
+  postedReviewId?: string;
 }) {
   const allReviews = useReviews();
   const reviews = reviewsForDish(allReviews, dish.id);
@@ -32,10 +32,23 @@ export default function DishView({
   const [selected, setSelected] = useState(0);
   const selectedIndex = selected < photos.length ? selected : 0;
   const mainPhoto = photos[selectedIndex];
+  const hasSamples = reviews.some((r) => r.isSample);
+
+  // Testers couldn't tell their review was saved, so bring it into view and flash it.
+  const [highlightId, setHighlightId] = useState(postedReviewId);
+  const scrolled = useRef(false);
+  const postedVisible = !!postedReviewId && reviews.some((r) => r.id === postedReviewId);
+  useEffect(() => {
+    if (!postedVisible || scrolled.current) return;
+    scrolled.current = true;
+    document.getElementById(`review-${postedReviewId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const t = setTimeout(() => setHighlightId(undefined), 4000);
+    return () => clearTimeout(t);
+  }, [postedVisible, postedReviewId]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      {justPosted && <Toast message="Review posted! Thanks for sharing." onDone={clearPostedParam} />}
+      {postedReviewId && <Toast message="Review posted! Thanks for sharing." onDone={clearPostedParam} />}
 
       <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-sm text-muted">
         <Link href="/restaurants" className="hover:text-brand">Restaurants</Link>
@@ -77,8 +90,13 @@ export default function DishView({
             </div>
           )}
           <p className="mt-2 text-xs text-muted">
-            {selectedIndex === 0 && dish.photoCredit ? (
-              <PhotoCreditLine credit={dish.photoCredit} />
+            {selectedIndex === 0 ? (
+              <>
+                Representative photo ·{" "}
+                <Link href="/credits" className="underline-offset-2 hover:text-brand hover:underline">
+                  credits
+                </Link>
+              </>
             ) : (
               "Diner photo"
             )}
@@ -140,12 +158,18 @@ export default function DishView({
         <h2 className="border-b border-line pb-3 text-xl font-extrabold">
           What diners are saying {reviews.length > 0 && <span className="text-muted">({reviews.length})</span>}
         </h2>
+        {hasSamples && (
+          <p className="mt-4 flex items-start gap-2 rounded-md bg-band p-3 text-sm text-muted">
+            <Info size={16} className="mt-0.5 shrink-0" />
+            Reviews from &ldquo;DishUp sample&rdquo; are placeholders shown until real diners add theirs.
+          </p>
+        )}
         {reviews.length === 0 ? (
           <p className="py-8 text-muted">Nobody has reviewed this dish yet.</p>
         ) : (
           <div className="divide-y divide-line">
             {reviews.map((r) => (
-              <ReviewCard key={r.id} review={r} />
+              <ReviewCard key={r.id} review={r} highlight={r.id === highlightId} />
             ))}
           </div>
         )}
