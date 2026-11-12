@@ -1,0 +1,27 @@
+# Copy to .github/workflows/backup.yml (AI agents can't edit .github/).
+# Needs two repository variables (Settings → Secrets and variables → Actions → Variables):
+#   SUPABASE_URL and SUPABASE_ANON_KEY. Both are public values.
+name: Backup reviews
+on:
+  schedule:
+    - cron: "0 9 * * *" # 2-3 am in Utah, every night
+  workflow_dispatch: # also allows a manual "Run workflow" button
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - name: Export reviews
+        run: node scripts/backup-reviews.mjs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reviews-backup-${{ github.run_id }}
+          path: backups/
+          retention-days: 90

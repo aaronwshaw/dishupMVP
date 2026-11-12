@@ -1,8 +1,11 @@
 // The only module that knows where data lives. Restaurants and dishes come from the
-// seed file; reviews are seed reviews plus whatever the user posted (localStorage).
-// Swapping to a real backend later means rewriting this file, not the pages.
+// seed file; reviews come from Supabase (or localStorage when it isn't configured).
+// Pages never talk to storage directly, only to the functions here.
+import { captureException } from "@sentry/nextjs";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { dishes, restaurants, seedReviews } from "@/data/seed";
 import { closestWord, indexWords, matchesAll, matchesAny, parseQuery } from "./search";
+import { fetchReviews, getSupabase, insertReview } from "./reviewsRemote";
 import { validateReview } from "./validation";
 import type { Dish, NewReview, Rating, Restaurant, Review } from "./types";
 
@@ -121,8 +124,36 @@ export function suggestQuery(query: string): string | undefined {
 export const CUISINES = [...new Set(restaurants.map((r) => r.cuisine))];
 
 // ---------- Reviews ----------
+// With Supabase configured (production), reviews are shared by everyone and backed up.
+// Without it (local dev, tests), each browser keeps its own reviews in localStorage.
 
 const listeners = new Set<() => void>();
+const notify = () => listeners.forEach((l) => l());
+
+// Supabase cache
+let remoteReviews: Review[] = [];
+let remoteSnapshot: Review[] = seedReviews;
+let remoteStatus: "idle" | "loading" | "loaded" | "error" = "idle";
+
+function setRemote(reviews: Review[]) {
+  remoteReviews = reviews;
+  remoteSnapshot = [...reviews, ...seedReviews];
+}
+
+async function loadRemote(db: SupabaseClient) {
+  remoteStatus = "loading";
+  try {
+    setRemote(await fetchReviews(db));
+    remoteStatus = "loaded";
+  } catch (err) {
+    // Keep showing the sample reviews; Sentry gets the details.
+    remoteStatus = "error";
+    captureException(err);
+  }
+  notify();
+}
+
+// localStorage cache
 let cachedRaw: string | null | undefined;
 let cachedReviews: Review[] = seedReviews;
 
@@ -134,29 +165,38 @@ function readStoredRaw(): string | null {
   }
 }
 
-/** All reviews (posted + seed). Returns the same array until storage changes. */
+function readStored(): Review[] {
+  try {
+    const parsed: unknown = JSON.parse(readStoredRaw() ?? "[]");
+    return Array.isArray(parsed) ? (parsed as Review[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** All reviews (posted + sample). Returns the same array until something changes. */
 export function getReviewsSnapshot(): Review[] {
+  if (getSupabase()) return remoteSnapshot;
   const raw = readStoredRaw();
   if (raw !== cachedRaw) {
     cachedRaw = raw;
-    let stored: Review[] = [];
-    try {
-      stored = raw ? JSON.parse(raw) : [];
-    } catch {
-      stored = [];
-    }
-    cachedReviews = [...stored, ...seedReviews];
+    cachedReviews = [...readStored(), ...seedReviews];
   }
   return cachedReviews;
 }
 
-/** What the server renders before the browser's saved reviews are available. */
+/** What the server renders before the browser has loaded posted reviews. */
 export function getServerReviewsSnapshot(): Review[] {
   return seedReviews;
 }
 
 export function subscribeToReviews(listener: () => void): () => void {
   listeners.add(listener);
+  const db = getSupabase();
+  if (db) {
+    if (remoteStatus === "idle" || remoteStatus === "error") void loadRemote(db);
+    return () => listeners.delete(listener);
+  }
   window.addEventListener("storage", listener);
   return () => {
     listeners.delete(listener);
@@ -164,27 +204,26 @@ export function subscribeToReviews(listener: () => void): () => void {
   };
 }
 
-export function addReview(input: NewReview): Review {
+export async function addReview(input: NewReview): Promise<Review> {
   // Re-check at the boundary so no caller can save an invalid review.
   const checked = validateReview(input);
   if (!checked.ok) throw new Error(Object.values(checked.errors).join(" "));
-  const review: Review = {
-    ...checked.review,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-  };
-  let stored: Review[] = [];
-  try {
-    stored = JSON.parse(readStoredRaw() ?? "[]");
-  } catch {
-    stored = [];
+
+  const db = getSupabase();
+  if (db) {
+    const saved = await insertReview(db, checked.review);
+    setRemote([saved, ...remoteReviews]);
+    notify();
+    return saved;
   }
+
+  const review: Review = { ...checked.review, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([review, ...stored]));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([review, ...readStored()]));
   } catch {
     throw new Error("Couldn't save your review. Your browser storage may be full, so try a smaller photo.");
   }
-  listeners.forEach((l) => l());
+  notify();
   return review;
 }
 

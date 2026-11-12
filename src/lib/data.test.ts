@@ -13,6 +13,9 @@ import {
 } from "./data";
 import type { Review } from "./types";
 
+// Sentry is a no-op in tests; stub it so the data layer's error reporting can be checked.
+vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }));
+
 const names = (q: string, city?: string) => searchRestaurants({ query: q, city }).restaurants.map((r) => r.name);
 
 describe("searchRestaurants", () => {
@@ -149,10 +152,10 @@ describe("posting reviews (browser storage)", () => {
     vi.stubGlobal("window", { addEventListener: vi.fn(), removeEventListener: vi.fn() });
   });
 
-  it("saves a valid review, puts it first and notifies listeners", () => {
+  it("saves a valid review, puts it first and notifies listeners", async () => {
     const listener = vi.fn();
     const unsubscribe = subscribeToReviews(listener);
-    const posted = addReview({ dishId: "japchae", rating: 5, text: "  Chewy noodles, great flavor.  ", authorName: "" });
+    const posted = await addReview({ dishId: "japchae", rating: 5, text: "  Chewy noodles, great flavor.  ", authorName: "" });
     expect(posted).toMatchObject({ dishId: "japchae", text: "Chewy noodles, great flavor.", authorName: "DishUp diner" });
     expect(getReviewsSnapshot()[0]).toEqual(posted);
     expect(getReviewsSnapshot()).toHaveLength(seedReviews.length + 1);
@@ -160,19 +163,21 @@ describe("posting reviews (browser storage)", () => {
     unsubscribe();
   });
 
-  it("refuses to save an invalid review", () => {
-    expect(() => addReview({ dishId: "japchae", rating: 9, text: "short", authorName: "" })).toThrow(/star rating/);
+  it("refuses to save an invalid review", async () => {
+    await expect(addReview({ dishId: "japchae", rating: 9, text: "short", authorName: "" })).rejects.toThrow(/star rating/);
     expect(getReviewsSnapshot()).toHaveLength(seedReviews.length);
   });
 
-  it("explains when browser storage is full", () => {
+  it("explains when browser storage is full", async () => {
     vi.stubGlobal("localStorage", {
       getItem: () => null,
       setItem: () => {
         throw new Error("QuotaExceededError");
       },
     });
-    expect(() => addReview({ dishId: "japchae", rating: 4, text: "Big photo review here", authorName: "" })).toThrow(/storage may be full/);
+    await expect(addReview({ dishId: "japchae", rating: 4, text: "Big photo review here", authorName: "" })).rejects.toThrow(
+      /storage may be full/,
+    );
   });
 
   it("ignores corrupted stored data instead of crashing", () => {

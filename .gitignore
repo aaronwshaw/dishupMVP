@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# review backups (scripts/backup-reviews.mjs)
+backups/
+supabase/.temp/
