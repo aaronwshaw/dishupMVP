@@ -3,6 +3,7 @@
 // Swapping to a real backend later means rewriting this file, not the pages.
 import { dishes, restaurants, seedReviews } from "@/data/seed";
 import { closestWord, indexWords, matchesAll, matchesAny, parseQuery } from "./search";
+import { validateReview } from "./validation";
 import type { Dish, NewReview, Rating, Restaurant, Review } from "./types";
 
 const STORAGE_KEY = "dishup.reviews";
@@ -164,8 +165,11 @@ export function subscribeToReviews(listener: () => void): () => void {
 }
 
 export function addReview(input: NewReview): Review {
+  // Re-check at the boundary so no caller can save an invalid review.
+  const checked = validateReview(input);
+  if (!checked.ok) throw new Error(Object.values(checked.errors).join(" "));
   const review: Review = {
-    ...input,
+    ...checked.review,
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
   };
