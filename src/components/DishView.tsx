@@ -12,6 +12,10 @@ import { courseLabel, formatPrice, formatRating, reviewCountLabel } from "@/lib/
 import type { Dish, Restaurant } from "@/lib/types";
 import { useReviews } from "@/lib/useReviews";
 
+// Only our own /public images go through Next's optimizer; diner photos (stored in
+// Supabase, already resized to 800px on upload) are shown as-is.
+const isLocalImage = (src: string) => src.startsWith("/");
+
 // Drop ?posted=… so a refresh doesn't show the toast again.
 const clearPostedParam = () => window.history.replaceState(null, "", window.location.pathname);
 
@@ -67,7 +71,7 @@ export default function DishView({
               alt={dish.name}
               fill
               priority
-              unoptimized={mainPhoto.startsWith("data:")}
+              unoptimized={!isLocalImage(mainPhoto)}
               sizes="(min-width: 1024px) 55vw, 100vw"
               className="object-cover"
             />
@@ -84,7 +88,7 @@ export default function DishView({
                     i === selectedIndex ? "border-brand" : "border-transparent opacity-80 hover:opacity-100"
                   }`}
                 >
-                  <Image src={src} alt="" fill unoptimized={src.startsWith("data:")} sizes="80px" className="object-cover" />
+                  <Image src={src} alt="" fill unoptimized={!isLocalImage(src)} sizes="80px" className="object-cover" />
                 </button>
               ))}
             </div>
