@@ -25,6 +25,9 @@ jobs:
         run: npm run build
       - name: Type-check (tsc strict)
         run: npx tsc --noEmit
+      - name: Unit tests (coverage must stay above 80%)
+        run: npm run test:coverage
+
       - name: Vulnerable dependencies (high or critical)
         run: |
           if ! npm audit --omit=dev --audit-level=high; then
