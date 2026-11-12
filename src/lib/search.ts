@@ -21,7 +21,6 @@ const CHEAP_WORDS = new Set(["cheap", "budget", "inexpensive", "affordable", "ch
 export function stem(word: string): string {
   if (word.length > 4 && word.endsWith("ies")) return word.slice(0, -3) + "y";
   if (word.length > 4 && /(ches|shes|xes|oes)$/.test(word)) return word.slice(0, -2);
-  if (word.length > 3 && word.endsWith("s") && !word.endsWith("ss")) return word.slice(0, -1);
   return word;
 }
 
