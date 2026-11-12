@@ -19,9 +19,11 @@ export default function ReviewForm({ dish, restaurant }: { dish: Dish; restauran
   const [photoUrl, setPhotoUrl] = useState<string>();
   const [authorName, setAuthorName] = useState("");
   const [errors, setErrors] = useState<{ rating?: string; text?: string; save?: string }>({});
+  const [saving, setSaving] = useState(false);
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (saving) return;
     const result = validateReview({ dishId: dish.id, rating, text, authorName, photoUrl });
     if (!result.ok) {
       setErrors(result.errors);
@@ -29,11 +31,13 @@ export default function ReviewForm({ dish, restaurant }: { dish: Dish; restauran
     }
     setErrors({});
 
+    setSaving(true);
     let postedId: string;
     try {
-      postedId = addReview(result.review).id;
+      postedId = (await addReview(result.review)).id;
     } catch (err) {
       setErrors({ save: (err as Error).message });
+      setSaving(false);
       return;
     }
     router.push(`/dishes/${dish.id}?posted=${postedId}`);
@@ -119,9 +123,10 @@ export default function ReviewForm({ dish, restaurant }: { dish: Dish; restauran
             </Link>
             <button
               type="submit"
-              className="h-12 rounded-md bg-brand px-8 font-bold text-white transition-colors hover:bg-brand-dark"
+              disabled={saving}
+              className="h-12 rounded-md bg-brand px-8 font-bold text-white transition-colors hover:bg-brand-dark disabled:cursor-wait disabled:opacity-70"
             >
-              Post review
+              {saving ? "Posting…" : "Post review"}
             </button>
           </div>
         </form>
