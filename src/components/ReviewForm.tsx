@@ -8,9 +8,9 @@ import PhotoUpload from "./PhotoUpload";
 import { StarInput } from "./StarRating";
 import { addReview } from "@/lib/data";
 import type { Dish, Restaurant } from "@/lib/types";
+import { REVIEW_LIMITS, validateReview } from "@/lib/validation";
 
-const MIN_LENGTH = 10;
-const MAX_LENGTH = 1000;
+const { minText: MIN_LENGTH, maxText: MAX_LENGTH, maxName: MAX_NAME } = REVIEW_LIMITS;
 
 export default function ReviewForm({ dish, restaurant }: { dish: Dish; restaurant: Restaurant }) {
   const router = useRouter();
@@ -22,21 +22,16 @@ export default function ReviewForm({ dish, restaurant }: { dish: Dish; restauran
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const next: typeof errors = {};
-    if (rating === 0) next.rating = "Please choose a star rating.";
-    if (text.trim().length < MIN_LENGTH) next.text = `Tell us a bit more (at least ${MIN_LENGTH} characters).`;
-    setErrors(next);
-    if (Object.keys(next).length > 0) return;
+    const result = validateReview({ dishId: dish.id, rating, text, authorName, photoUrl });
+    if (!result.ok) {
+      setErrors(result.errors);
+      return;
+    }
+    setErrors({});
 
     let postedId: string;
     try {
-      postedId = addReview({
-        dishId: dish.id,
-        rating,
-        text: text.trim(),
-        photoUrl,
-        authorName: authorName.trim() || "DishUp diner",
-      }).id;
+      postedId = addReview(result.review).id;
     } catch (err) {
       setErrors({ save: (err as Error).message });
       return;
@@ -107,7 +102,7 @@ export default function ReviewForm({ dish, restaurant }: { dish: Dish; restauran
             <input
               id="review-name"
               value={authorName}
-              onChange={(e) => setAuthorName(e.target.value.slice(0, 40))}
+              onChange={(e) => setAuthorName(e.target.value.slice(0, MAX_NAME))}
               placeholder="e.g. Alex S."
               className="mt-2 h-11 w-full rounded-md border border-line px-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
             />
